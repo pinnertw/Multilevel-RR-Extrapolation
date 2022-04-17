@@ -1,17 +1,22 @@
 SRC_DIR=src
 OBJ_DIR=obj
 
-cc=gcc
-CFLAGS=-O3 -I(HEADER_DIR)
+cc=g++
+CFLAGS=-O3
 OPENMPFLAGS=-fopenmp
 
-OBJ=$(OBJ_DIR)/sample.o
+SRC=$(SRC_DIR)/generator.cpp
+OBJ=$(OBJ_DIR)/generator.o
 
 
-all: $(OBJ_DIR)
+all: $(OBJ_DIR) generator
 
 $(OBJ_DIR):
 	mkdir $(OBJ_DIR)
+
+generator : $(SRC_DIR)/generator.cpp
+	$(cc) $(CFLAGS) $< -o test.out
+
 
 clean:
 	rm -f $(OBJ)
