@@ -161,6 +161,49 @@ class euler_schema
         }
 };
 
+class nested_monte_carlo
+{
+    private:
+        double s0;
+        double r;
+        double sigma;
+        double K1;
+        double K2;
+        double T1;
+        double T2;
+        // Normal dist.
+        vd random_normal;
+    public:
+        nested_monte_carlo(double s0_, double r_, double sigma_, double K1_, double K2_, double T1_, double T2_){
+            s0 = s0_;
+            r = r_;
+            sigma = sigma_;
+            K1 = K1_;
+            K2 = K2_;
+            T1 = T1_;
+            T2 = T2_;
+        }
+        void get_normal_distribution(int N){
+            mt19937_64 generator;
+            auto seed = chrono::system_clock::now().time_since_epoch().count();
+            random_normal = vd(N*2, 0.);
+            normal_distribution<double> dist(0., 1.);
+            for (auto i=0; i < N*2; i++){
+                random_normal[i] = dist(generator);
+            }
+        }
+
+        void simulations(int N){
+            get_normal_distribution(N);
+            vvd results = vvd(N, vd(2, 0.));
+            for (auto i=0; i < N; i++){
+                // TODO: Check how many simulation per one S_T1
+                results[i][0] = s0 * exp((r - 0.5 * sigma * sigma) * T1 + sigma * sqrt(T1) * random_normal[2 * i]);
+                results[i][1] = results[i][0] * exp((r - 0.5 * sigma * sigma) * (T2 - T1) + sigma * sqrt(T2 - T1) * random_normal[2 * i + 1]);
+            }
+        }
+};
+
 class geometric_brownian_payoff
 {
     private:
@@ -175,8 +218,13 @@ class geometric_brownian_payoff
         // Other params for different options
         double lambda;
         double B;
+        double T2;
+        double K2;
+        // TODO
+        // Real value, Variance, Complexity, Cost, auto-tuning
     public:
-        geometric_brownian_payoff(int type_, double x0_, double r_, double sigma_, double K_, double T_, double extra_param_ = 1.1){
+        geometric_brownian_payoff(int type_, double x0_, double r_, double sigma_, double K_, double T_, 
+                double extra_param_ = 1.1, double extra_param2_ = 2.2){
             x0 = x0_;
             r = r_;
             sigma = sigma_;
@@ -186,6 +234,7 @@ class geometric_brownian_payoff
              * 1 -> BS vanilla call
              * 2 -> Lookback option
              * 3 -> Barrier option
+             * 4 -> Compound option
              */
             if (type_ == 1){
                 alpha = 1.;
@@ -229,6 +278,10 @@ class geometric_brownian_payoff
                 };
             }
             else if (type_ == 4){
+                alpha = 1.;
+                beta = 1.;
+                T2 = extra_param_;
+                K2 = extra_param2_;
                 payoff_func = [&](vd& results){
                     // TODO
                     return 0.;
@@ -257,6 +310,9 @@ int main(int argc, char ** argv)
     euler_schema schema = euler_schema(0.01, 10, 80, b, sigma);
     schema.simulations(10);
     geometric_brownian_payoff(1, 100, 0.06, 0.4, 80, 1);
+    geometric_brownian_payoff(1, 100, 0.06, 0.4, 80, 2);
+    geometric_brownian_payoff(1, 100, 0.06, 0.4, 80, 3);
+    geometric_brownian_payoff(1, 100, 0.06, 0.4, 80, 4);
     test();
     return 0;
 }
