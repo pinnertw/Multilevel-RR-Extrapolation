@@ -102,8 +102,9 @@ class params
 #if PRINT1
             cout << "Print weight coefficients" << endl;
             for (auto i = 0; i < R; i++){
-                cout << weights[i] << endl;
+                cout << weights[i] << ' ';
             }
+            cout << endl;
             cout << "w_tilde = " << w_tilde << endl;
 #endif
         }
@@ -116,11 +117,11 @@ class euler_schema
         double sqrt_step_size;
         int total_step;
         double X0;
-        function<double(double)> b;
-        function<double(double)> sigma;
+        function<double(double &)> b;
+        function<double(double &)> sigma;
         vd random_normal;
     public:
-        euler_schema(double step_size_, int total_step_, double X0_, function<double(double)> b_, function<double(double)> sigma_){
+        euler_schema(double step_size_, int total_step_, double X0_, function<double(double &)> b_, function<double(double &)> sigma_){
             step_size = step_size_;
             sqrt_step_size = sqrt(step_size);
             total_step = total_step_;
@@ -160,6 +161,82 @@ class euler_schema
         }
 };
 
+class geometric_brownian_payoff
+{
+    private:
+        double x0;
+        double r;
+        double sigma;
+        double K;
+        double T;
+        function<double(vd &)> payoff_func;
+        double alpha;
+        double beta;
+        // Other params for different options
+        double lambda;
+        double B;
+    public:
+        geometric_brownian_payoff(int type_, double x0_, double r_, double sigma_, double K_, double T_, double extra_param_ = 1.1){
+            x0 = x0_;
+            r = r_;
+            sigma = sigma_;
+            K = K_;
+            T = T_;
+            /* type_:
+             * 1 -> BS vanilla call
+             * 2 -> Lookback option
+             * 3 -> Barrier option
+             */
+            if (type_ == 1){
+                alpha = 1.;
+                beta = 1.;
+                payoff_func = [&](vd& results) {
+                    int total_steps = results.size();
+                    if (results[total_steps-1] > K){
+                        return exp(-r * T) * (results[total_steps-1] - K);
+                    }
+                    else{
+                        return 0.;
+                    }
+                };
+            }
+            else if (type_ == 2){
+                alpha = 0.5;
+                beta = 1.;
+                lambda = extra_param_;
+                payoff_func = [&](vd& results){
+                    double x_min = 1e9;
+                    for (double x : results){
+                        if(x < x_min) x_min = x;
+                    }
+                    return exp(-r * T) * max(results[results.size()-1] - lambda * x_min, 0.);
+                };
+            }
+            else if (type_ == 3){
+                alpha = 0.5;
+                beta = 0.5;
+                B = extra_param_;
+                payoff_func = [&](vd& results){
+                    bool passed = false;
+                    for (double x : results){
+                        if (x > B) {
+                            passed = true;
+                            break;
+                        }
+                    };
+                    if (!passed) return exp(-r * T) * max(results[results.size()-1] - K, 0.);
+                    else return 0.;
+                };
+            }
+            else if (type_ == 4){
+                payoff_func = [&](vd& results){
+                    // TODO
+                    return 0.;
+                };
+            }
+        }
+};
+
 class estimators
 {
     private:
@@ -171,13 +248,15 @@ class estimators
 };
 
 
-
 int main(int argc, char ** argv)
 {
     params param(5, 6, 0.5, 1.);
     estimators est(10);
-    function<double(double)> b = [](double a) {return a * 5.;};
-    function<double(double)> sigma = [](double a) {return 5.;};
-    euler_schema(0.01, 10, 80, b, sigma).simulations(10);
+    function<double(double&)> b = [](double a) {return a * 5.;};
+    function<double(double&)> sigma = [](double a) {return 5.;};
+    euler_schema schema = euler_schema(0.01, 10, 80, b, sigma);
+    schema.simulations(10);
+    geometric_brownian_payoff(1, 100, 0.06, 0.4, 80, 1);
+    test();
     return 0;
 }
