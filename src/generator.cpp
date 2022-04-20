@@ -9,9 +9,13 @@ using namespace std;
 #define vb vector<bool>
 #define d double
 
+enum model{call, lookback, barrier, compound};
+enum method{MLMC, MLRR};
+
 class estimator
 {
     private:
+        model type;
         double x0;
         double r;
         double sigma;
@@ -28,20 +32,15 @@ class estimator
         // TODO
         // Real value, Variance, Complexity, Cost, auto-tuning
     public:
-        estimator(int type_, double x0_, double r_, double sigma_, double K_, double T_, 
+        estimator(model type_, double x0_, double r_, double sigma_, double K_, double T_, 
                 double extra_param_ = 1.1, double extra_param2_ = 2.2){
+            type = type_;
             x0 = x0_;
             r = r_;
             sigma = sigma_;
             K = K_;
             T = T_;
-            /* type_:
-             * 1 -> BS vanilla call
-             * 2 -> Lookback option
-             * 3 -> Barrier option
-             * 4 -> Compound option
-             */
-            if (type_ == 1){
+            if (type_ == call){
                 alpha = 1.;
                 beta = 1.;
                 payoff_func = [&](vd& results) {
@@ -54,7 +53,7 @@ class estimator
                     }
                 };
             }
-            else if (type_ == 2){
+            else if (type_ == lookback){
                 alpha = 0.5;
                 beta = 1.;
                 lambda = extra_param_;
@@ -66,7 +65,7 @@ class estimator
                     return exp(-r * T) * max(results[results.size()-1] - lambda * x_min, 0.);
                 };
             }
-            else if (type_ == 3){
+            else if (type_ == barrier){
                 alpha = 0.5;
                 beta = 0.5;
                 B = extra_param_;
@@ -82,15 +81,51 @@ class estimator
                     else return 0.;
                 };
             }
-            else if (type_ == 4){
+            else if (type_ == compound){
                 alpha = 1.;
                 beta = 1.;
-                T2 = extra_param_;
-                K2 = extra_param2_;
+                K2 = extra_param_;
+                T2 = extra_param2_;
                 payoff_func = [&](vd& results){
-                    // TODO
-                    return 0.;
+                    double sum_ = 0.;
+                    for (auto x: results){
+                        if (x > K2){
+                            sum_ += x - K2;
+                        }
+                    }
+                    sum_ /= (double) results.size();
+                    if(K > sum_) return K - sum_;
+                    else return 0.;
                 };
+            }
+        }
+        void simulations(){
+            // TODO step size autotune, simulations with different allocations;
+            if(type == call){
+                double step_size = 0.01;
+                int total_step = T / step_size;
+                function<double(double &)> b_func = [&](double t){return r * t;};
+                function<double(double &)> sigma_func = [&](double t){return sigma * t;};
+                euler_scheme generator = euler_scheme(step_size, total_step, x0, b_func, sigma_func);
+            }
+            else if (type == lookback){
+                double step_size = 0.01;
+                int total_step = T / step_size;
+                function<double(double &)> b_func = [&](double t){return r * t;};
+                function<double(double &)> sigma_func = [&](double t){return sigma * t;};
+                euler_scheme generator = euler_scheme(step_size, total_step, x0, b_func, sigma_func);
+            }
+            else if (type == barrier){
+                double step_size = 0.01;
+                int total_step = T / step_size;
+                function<double(double &)> b_func = [&](double t){return r * t;};
+                function<double(double &)> sigma_func = [&](double t){return sigma * t;};
+                euler_scheme generator = euler_scheme(step_size, total_step, x0, b_func, sigma_func);
+            }
+            else if (type == compound){
+                int n1 = 1;
+                int n2 = 5;
+                nested_monte_carlo generator = nested_monte_carlo(x0, r, sigma, K, T, K2, T2, n1, n2);
             }
         }
 };
@@ -101,13 +136,12 @@ int main(int argc, char ** argv)
     param.init_weights();
     function<double(double&)> b = [](double a) {return a * 5.;};
     function<double(double&)> sigma = [](double a) {return 5.;};
-    euler_schema schema = euler_schema(0.01, 10, 80, b, sigma);
+    euler_scheme schema = euler_scheme(0.01, 10, 80, b, sigma);
     schema.simulations(10);
-    estimator(1, 100, 0.06, 0.4, 80, 1);
-    estimator(1, 100, 0.06, 0.4, 80, 2);
-    estimator(1, 100, 0.06, 0.4, 80, 3);
-    estimator(1, 100, 0.06, 0.4, 80, 4);
-    nested_monte_carlo(100., 0.04, 0.3, 10., 20., 1/6, 1/2, 5, 10).simulations(50);
+    estimator(call, 100, 0.06, 0.4, 80, 1);
+    estimator(lookback, 100, 0.15, 0.1, 0, 1, 1.1);
+    estimator(barrier, 100, 0., 0.15, 100, 1, 120);
+    estimator(compound, 100, 0.03, 0.4, 6.5, 1./12., 100, 1/2.);
     test();
     return 0;
 }

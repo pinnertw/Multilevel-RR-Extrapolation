@@ -91,7 +91,8 @@ void params::init_weights(){
 #endif
 }
 
-euler_schema::euler_schema(double step_size_, int total_step_, double X0_, function<double(double &)> b_, function<double(double &)> sigma_){
+// EULER SCHEME
+euler_scheme::euler_scheme(double step_size_, int total_step_, double X0_, function<double(double &)> b_, function<double(double &)> sigma_){
     step_size = step_size_;
     sqrt_step_size = sqrt(step_size);
     total_step = total_step_;
@@ -100,7 +101,13 @@ euler_schema::euler_schema(double step_size_, int total_step_, double X0_, funct
     sigma = sigma_;
 }
 
-void euler_schema::get_normal_distribution(int N){
+void euler_scheme::reset_step(double step_size_, int total_step_){
+    step_size = step_size_;
+    sqrt_step_size = sqrt(step_size);
+    total_step = total_step_;
+}
+
+void euler_scheme::get_normal_distribution(int N){
     mt19937_64 generator;
     auto seed = chrono::system_clock::now().time_since_epoch().count();
     random_normal = vd(N*total_step, 0.);
@@ -110,7 +117,7 @@ void euler_schema::get_normal_distribution(int N){
     }
 }
 
-vvd euler_schema::simulations(int N){
+vvd euler_scheme::simulations(int N){
     get_normal_distribution(N);
     vvd results = vvd(N, vd(total_step + 1, 0.));
     for (auto i=0; i < N; i++){
@@ -130,6 +137,7 @@ vvd euler_schema::simulations(int N){
     return results;
 }
 
+// NESTED MONTE CARLO
 nested_monte_carlo::nested_monte_carlo(double s0_, double r_, double sigma_, double K1_, double K2_, double T1_, double T2_, int n1_, int n2_){
     s0 = s0_;
     r = r_;
@@ -141,10 +149,12 @@ nested_monte_carlo::nested_monte_carlo(double s0_, double r_, double sigma_, dou
     n1 = n1_;
     n2 = n2_;
 }
+
 void nested_monte_carlo::reset_n(int n1_, int n2_){
     n1 = n1_;
     n2 = n2_;
 }
+
 void nested_monte_carlo::get_normal_distribution(int N){
     mt19937_64 generator;
     auto seed = chrono::system_clock::now().time_since_epoch().count();

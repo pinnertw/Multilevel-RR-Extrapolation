@@ -30,7 +30,7 @@ class params{
         void init_refiners();
         void init_weights();
 };
-class euler_schema{
+class euler_scheme{
     private:
         double step_size;
         double sqrt_step_size;
@@ -40,7 +40,8 @@ class euler_schema{
         function<double(double &)> sigma;
         vd random_normal;
     public:
-        euler_schema(double step_size_, int total_step_, double X0_, function<double(double &)> b_, function<double(double &)> sigma_);
+        euler_scheme(double step_size_, int total_step_, double X0_, function<double(double &)> b_, function<double(double &)> sigma_);
+        void reset_step(double step_size_, int total_step_);
         void get_normal_distribution(int N);
         vvd simulations(int N);
 };
