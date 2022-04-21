@@ -21,12 +21,10 @@ params::params(int M_, int R_, double alpha_, double beta_){
         R = R_;
         alpha = alpha_;
         beta = beta_;
-        // Refiners
-        init_refiners();
-        // Weights
         dp_exist = vb(R, false);
         dp_exponant_array = vd(R, 0);
-        weights = vd(R, 1.);
+        // INIT
+        init_refiners();
         init_weights();
         print_params();
     }
@@ -62,6 +60,7 @@ void params::init_refiners(){
 }
 
 void params::init_weights(){
+    weights = vd(R, 1.);
     for (auto i = 0; i < R; i++){
         if ( (R - (i + 1)) % 2 != 0){
             weights[i] = -1;

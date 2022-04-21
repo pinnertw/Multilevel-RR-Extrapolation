@@ -128,6 +128,26 @@ class estimator
                 nested_monte_carlo generator = nested_monte_carlo(x0, r, sigma, K, T, K2, T2, n1, n2);
             }
         }
+
+        // Autotune
+        // double 
+        params find_best_params(double epsilon){
+            int optimal_M = 2;
+            double min_complexity = DBL_MAX;
+            params param = params(optimal_M, 2, alpha, beta);
+            for (auto M=2; M <= 10; M++){
+                auto_tune(param, M, epsilon);
+                if (complexity(param) < min_complexity){
+                    min_complexity = complexity(param);
+                    optimal_M = M;
+                }
+            }
+            auto_tune(param, optimal_M, epsilon);
+            return param;
+        }
+        // TODO
+        void auto_tune(params param, int M, double epsilon); // change other params
+        double complexity(params param); // Return complexity
 };
 
 int main(int argc, char ** argv)
