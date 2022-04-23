@@ -1,6 +1,8 @@
 #include <bits/stdc++.h>
+#include "src/define.h"
 #include "src/structural_params.h"
 #include "src/models.h"
+#include "src/estimator.h"
 
 void test(string str="000"){
     cout << str << endl;
@@ -8,11 +10,9 @@ void test(string str="000"){
 
 int main(){
     /*structural_params
-     * method_type
-     * method_type = Multistep_RR, Multilevel_MC
      */
     test("Init structural parameters");
-    structural_params sp(Multistep_RR);
+    structural_params sp;
 
     /* multilevel_params:
      * alpha, beta, V1, varY0, simulation_type
@@ -32,6 +32,13 @@ int main(){
      */
     test("Init nested monte carlo");
     nested_monte_carlo model2(80, 0.01, 0.3, 50, 80, 1/12., 1/2.);
+
+    /* estimator
+     * method_type, structural_params, multilevel_params;
+     * method_type = Multilevel_RR, Multilevel_MC
+     */
+    test("Init estimator");
+    estimator est(Multilevel_RR, sp, mlp);
 
     return 0;
 }

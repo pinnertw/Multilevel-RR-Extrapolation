@@ -10,3 +10,6 @@ using namespace std;
 #define vd vector<double>
 #define vb vector<bool>
 #define d double
+
+enum method_type {Multilevel_RR, Multilevel_MC};
+enum simulation_type {diffusion, nested};

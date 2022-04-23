@@ -1,8 +1,6 @@
+#pragma once
 #include "define.h"
 using namespace std;
-
-enum method_type {Multistep_RR, Multilevel_MC};
-enum simulation_type {diffusion, nested};
 
 class structural_params{
     public:
@@ -14,13 +12,10 @@ class structural_params{
         int R;
         int N;
 
-        // Method type
-        method_type method; 
-
         // Usage
         vvd T;
 
-        structural_params(method_type);
+        structural_params();
         void init_n(int M);
 };
 

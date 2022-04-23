@@ -6,10 +6,12 @@ CFLAGS=-O3 -I$(SRC_DIR)
 OPENMPFLAGS=-fopenmp
 
 SRC= structural_params.cpp \
-	 models.cpp
+	 models.cpp \
+	 estimator.cpp
 
 OBJ=$(OBJ_DIR)/structural_params.o \
-	$(OBJ_DIR)/models.o
+	$(OBJ_DIR)/models.o \
+	$(OBJ_DIR)/estimator.o
 
 all: $(OBJ_DIR) test
 

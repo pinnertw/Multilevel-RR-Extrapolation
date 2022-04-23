@@ -6,8 +6,7 @@
 using namespace std;
 
 // STRUCTURAL PARAMETERS
-structural_params::structural_params(method_type method_): method(method_){
-}
+structural_params::structural_params(){};
 
 void structural_params::init_n(int M){
     n = vi(R);
