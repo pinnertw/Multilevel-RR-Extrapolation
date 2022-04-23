@@ -1,0 +1,76 @@
+#include <bits/stdc++.h>
+#include "params.h"
+using namespace std;
+
+#define vvi vector<vector<int>>
+#define vi vector<int>
+#define vvd vector<vector<double>>
+#define vd vector<double>
+#define vb vector<bool>
+#define d double
+
+enum model{call, lookback, barrier, compound};
+enum method{MLMC, MLRR};
+
+/*
+ * This file is not usable, but can give an idea to different parameters for different simulations.
+
+if (type_ == call){
+    alpha = 1.;
+    beta = 1.;
+    payoff_func = [&](vd& results) {
+        int total_steps = results.size();
+        if (results[total_steps-1] > K){
+            return exp(-r * T) * (results[total_steps-1] - K);
+        }
+        else{
+            return 0.;
+        }
+    };
+}
+else if (type_ == lookback){
+    alpha = 0.5;
+    beta = 1.;
+    lambda = extra_param_;
+    payoff_func = [&](vd& results){
+        double x_min = 1e9;
+        for (double x : results){
+            if(x < x_min) x_min = x;
+        }
+        return exp(-r * T) * max(results[results.size()-1] - lambda * x_min, 0.);
+    };
+}
+else if (type_ == barrier){
+    alpha = 0.5;
+    beta = 0.5;
+    B = extra_param_;
+    payoff_func = [&](vd& results){
+        bool passed = false;
+        for (double x : results){
+            if (x > B) {
+                passed = true;
+                break;
+            }
+        };
+        if (!passed) return exp(-r * T) * max(results[results.size()-1] - K, 0.);
+        else return 0.;
+    };
+}
+else if (type_ == compound){
+    alpha = 1.;
+    beta = 1.;
+    K2 = extra_param_;
+    T2 = extra_param2_;
+    payoff_func = [&](vd& results){
+        double sum_ = 0.;
+        for (auto x: results){
+            if (x > K2){
+                sum_ += x - K2;
+            }
+        }
+        sum_ /= (double) results.size();
+        if(K > sum_) return K - sum_;
+        else return 0.;
+    };
+}
+*/
