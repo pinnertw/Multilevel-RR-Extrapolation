@@ -17,6 +17,7 @@ class structural_params{
         double h;
         vi n;
         int R;
+        int N;
 
         // Method type
         method_type method; 
@@ -35,6 +36,7 @@ class structural_params{
 };
 
 
+enum simulation_type {diffusion, nested};
 
 class multilevel_params{
     public:
@@ -46,10 +48,11 @@ class multilevel_params{
         double V1;
         double varY0;
         double theta = sqrt(V1 / varY0);
+        simulation_type sim_type;
 
         double hmax;
-        double c_tilde;
-        double c1;
+        double c_tilde=1;
+        double c1=1;
 
         // weights
         vd weights;
