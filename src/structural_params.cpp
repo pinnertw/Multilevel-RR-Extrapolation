@@ -1,3 +1,6 @@
+// Define structural_parmas (q, h, n, R, N)
+// and multilevel_params (alpha, beta, V1, varY0, theta, hmax, c_tilde, c1, weights)
+//
 #include "define.h"
 using namespace std;
 

@@ -1,3 +1,4 @@
+// Estimator constructed with structural_params and multilevel_params.
 #include <bits/stdc++.h>
 #include "define.h"
 #include "structural_params.cpp"
