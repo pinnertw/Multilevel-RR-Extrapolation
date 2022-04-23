@@ -1,24 +1,26 @@
 SRC_DIR=src
 OBJ_DIR=obj
-INCLUDE=include
 
 cc=g++
-CFLAGS=-O3 -I$(INCLUDE)
+CFLAGS=-O3 -I$(SRC_DIR)
 OPENMPFLAGS=-fopenmp
 
-all: $(OBJ_DIR) params test
+SRC= structural_params.cpp \
+	 models.cpp
+
+OBJ=$(OBJ_DIR)/structural_params.o \
+	$(OBJ_DIR)/models.o
+
+all: $(OBJ_DIR) test
 
 $(OBJ_DIR):
 	mkdir $(OBJ_DIR)
 
-params: $(SRC_DIR)/params.cpp
-	$(cc) $(CFLAGS) -DPRINT $< -c -o obj/params.o
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
+	$(cc) $(CFLAGS) -c $< -o $@
 
-generator : $(SRC_DIR)/generator.cpp
-	$(cc) $(CFLAGS) $< $(OBJ_DIR)/params.o -o test.out
-
-test : $(SRC_DIR)/generator.cpp
-	$(cc) $(CFLAGS) -DPRINT $< $(OBJ_DIR)/params.o -o test.out
+test: $(OBJ) main.cpp
+	$(cc) $(CFLAGS) $(OBJ) main.cpp -o test.out
 
 clean:
-	rm -f $(OBJ)
+	rm -f $(OBJ) test.out
