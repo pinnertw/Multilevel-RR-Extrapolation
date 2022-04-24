@@ -82,6 +82,7 @@ int main(){
      */
     estimator est(Multilevel_RR, sp, mlp);
 
+    cout << "k,t1,t2,epsilon_L,bias,variance,R,M,h_inverse,N,cost" << endl;
     // Autotune
     for (int k=1; k<9; k++){
         struct timeval t1, t2;

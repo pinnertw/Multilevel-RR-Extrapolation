@@ -87,6 +87,7 @@ int main(){
      * method_type = Multilevel_RR, Multilevel_MC
      */
     estimator est(Multilevel_RR, sp, mlp);
+    cout << "k,t1,t2,epsilon_L,bias,variance,R,M,h_inverse,N,cost" << endl;
     for (int k=1; k<10; k++){
         struct timeval t1, t2;
         double duration1, duration2;
