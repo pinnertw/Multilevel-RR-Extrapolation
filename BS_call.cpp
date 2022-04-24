@@ -8,6 +8,27 @@ void test(string str="000"){
     cout << str << endl;
 }
 
+class instance{
+    public:
+        double s0;
+        double r;
+        double sigma;
+        double T;
+        double K;
+    instance(double s0_, double r_, double sigma_, double T_, double K_):
+        s0(s0_), r(r_), sigma(sigma_), T(T_), K(K_){
+        }
+    double payoff(double value){
+        if (value > K) return exp(-r * T) * (value - K);
+        else return 0.;
+    }
+
+    double payoff_array(vd & results){
+        return 0.; // TODO
+    }
+
+};
+
 int main(){
     /* We test on a Vanilla Call option where s0=100, r=0.06, sigma=0.4, T=1 and K=80.
      * For params, we have
@@ -19,6 +40,8 @@ int main(){
     double s0=100, r=0.06, sigma=0.4, T=1., K=80.;
     double alpha=1., beta=1., V1=56., varY0=876.;
     double real_value = 29.4987;
+
+    instance eval(s0, r, sigma, T, K);
 
     /*structural_params
      */

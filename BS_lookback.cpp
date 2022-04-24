@@ -8,6 +8,25 @@ void test(string str="000"){
     cout << str << endl;
 }
 
+class instance{
+    public:
+        double s0;
+        double r;
+        double sigma;
+        double T;
+        double lambda;
+    instance(double s0_, double r_, double sigma_, double T_, double lambda_):
+        s0(s0_), r(r_), sigma(sigma_), T(T_), lambda(lambda_){
+        }
+    double payoff_array(vd & results, int M=1){
+        double x_min = DBL_MAX;
+        for (auto i=0; i< results.size(); i+=M){
+            if (results[i] < x_min) x_min = results[i];
+        }
+        return exp(-r * T) * max(results[results.size()-1] - lambda * x_min, 0.);
+    }
+};
+
 int main(){
     /* We test on a Lookback option where s0=100, r=0.15, sigma=0.1, T=1 and lambda=1.1.
      * For params, we have
@@ -20,6 +39,8 @@ int main(){
     double s0=100, r=0.15, sigma=0.1, T=1., lambda=1.1;
     double alpha=0.5, beta=1., V1=3.58, varY0=41.;
     double real_value = 8.89343;
+
+    instance eval(s0, r, sigma, T, lambda);
 
     /*structural_params
      */

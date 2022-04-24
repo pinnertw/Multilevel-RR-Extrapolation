@@ -7,6 +7,31 @@
 void test(string str="000"){
     cout << str << endl;
 }
+class instance{
+    public:
+        double s0;
+        double r;
+        double sigma;
+        double T;
+        double K;
+        double B;
+    instance(double s0_, double r_, double sigma_, double T_, double K_, double B_):
+        s0(s0_), r(r_), sigma(sigma_), T(T_), K(K_), B(B_){
+        }
+    double payoff_array(vd & results, int M=1){
+        // set M to root_M to get Y_{j-1}
+        bool passed = false;
+        for (auto i=0; i < results.size(); i+= M){
+            if (results[i] > B) {
+                passed = true;
+                break;
+            }
+        }
+        if (!passed) return exp(-r * T) * max(results[results.size()-1] - K,  0.);
+        else return 0.;
+    }
+
+};
 
 int main(){
     /* We test on a up-and-out call option where s0=100, r=0.0, sigma=0.15, T=1 and K=100, B=120.
@@ -19,6 +44,8 @@ int main(){
     double s0=100, r=0.0, sigma=0.15, T=1., K=100., B=120.;
     double alpha=0.5, beta=0.5, V1=5.3, varY0=303.;
     double real_value = 1.855225;
+
+    instance eval(s0, r, sigma, T, K, B);
 
     /*structural_params
      */
