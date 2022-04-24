@@ -24,5 +24,17 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 test: $(OBJ) main.cpp
 	$(cc) $(CFLAGS) $(OBJ) main.cpp -o test.out
 
+call: $(OBJ) BS_call.cpp
+	$(cc) $(CFLAGS) $(OBJ) BS_call.cpp -o call.out
+
+lookback: $(OBJ) BS_lookback.cpp
+	$(cc) $(CFLAGS) $(OBJ) BS_lookback.cpp -o lookback.out
+
+barrier: $(OBJ) BS_barrier.cpp
+	$(cc) $(CFLAGS) $(OBJ) BS_barrier.cpp -o barrier.out
+
+compound: $(OBJ) compound.cpp
+	$(cc) $(CFLAGS) $(OBJ) compound.cpp -o compound.out
+
 clean:
-	rm -f $(OBJ) test.out
+	rm -f $(OBJ) *.out

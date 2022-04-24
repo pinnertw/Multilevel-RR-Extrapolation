@@ -1,2 +1,2 @@
-make
-./test.out
+make call
+./call.out
