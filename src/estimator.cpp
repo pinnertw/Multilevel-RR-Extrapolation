@@ -25,6 +25,7 @@ void estimator::auto_tune(double epsilon){
         }
     }
     M = M_opt;
+    init(epsilon);
 }
 
 void estimator::init(double epsilon){
@@ -110,10 +111,12 @@ int estimator::R_star(double epsilon){
     if (method == Multilevel_RR){
         double a = pow(mlp.c_tilde, 1/mlp.alpha) * mlp.hmax;
         double b = 0.5 + log(a) / log(M);
-        return ceil(b + sqrt(pow(b, 2.) + 2 * log(sqrt(1 + 4 * mlp.alpha)/epsilon)/mlp.alpha/log(M)));
+        int R_ = ceil(b + sqrt(pow(b, 2.) + 2 * log(sqrt(1 + 4 * mlp.alpha)/epsilon)/mlp.alpha/log(M)));
+        return R_ < 2? 2: R_;
     }
     else if (method == Multilevel_MC){
-        return ceil(1 + log(pow(mlp.c_tilde, 1/mlp.alpha) * mlp.hmax)/log(M) + log(sqrt(1+2*mlp.alpha)/epsilon) / mlp.alpha / log(M));
+        int R_ = ceil(1 + log(pow(mlp.c_tilde, 1/mlp.alpha) * mlp.hmax)/log(M) + log(sqrt(1+2*mlp.alpha)/epsilon) / mlp.alpha / log(M));
+        return R_ < 2? 2: R_;
     }
     else return 2;
 }

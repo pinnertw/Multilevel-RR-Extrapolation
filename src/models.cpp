@@ -59,8 +59,8 @@ void nested_monte_carlo::set_n(int n1_, int n2_){
 }
 
 void nested_monte_carlo::get_normal_distribution(int N){
-    mt19937_64 generator;
     auto seed = chrono::system_clock::now().time_since_epoch().count();
+    mt19937_64 generator(seed);
     random_normal = vd(N * (n2+1), 0.);
     normal_distribution<double> dist(0., 1.);
     for (auto i=0; i < N*(n2+1); i++){
