@@ -9,9 +9,19 @@ void test(string str="000"){
 }
 
 int main(){
+    /* We test on a compound option where s0=100, r=0.03, sigma=0.3, T1=1/12., T2=1/2. and K1=6.5, K2=100.
+     * For params, we have
+     * alpha = beta = 1
+     * V1 = 7.2
+     * var(Y0) = 9.09
+     * Real value of price: I0=1.36857
+     */
+    double s0=100, r=0.03, sigma=0.3, T1=1/12., T2=1/2., K1=6.5, K2=100;
+    double alpha=1., beta=1., V1=7.2, varY0=9.09;
+    double real_value = 1.36857;
+
     /*structural_params
      */
-    test("Init structural parameters");
     structural_params sp;
 
     /* multilevel_params:
@@ -19,19 +29,13 @@ int main(){
      * simulation_type = diffusion / nested
      */
     test("Init multilevel parameters");
-    multilevel_params mlp(1., 1., 1., 1., diffusion);
-
-    /* euler_scheme
-     * step_size, X0, b, sigma, T
-     */
-    test("Init euler scheme");
-    euler_scheme model(0.01, 80, 0.01, 0.3, 1);
+    multilevel_params mlp(alpha, beta, V1, varY0, nested);
 
     /* nested_monte_carlo
      * X0, r, sigma, K1, K2, T1, T2
      */
-    test("Init nested monte carlo");
-    nested_monte_carlo model2(80, 0.01, 0.3, 50, 80, 1/12., 1/2.);
+    test("Init nested monte carlo model");
+    nested_monte_carlo model(s0, r, sigma, K1, K2, T1, T2);
 
     /* estimator
      * method_type, structural_params, multilevel_params;
@@ -39,6 +43,14 @@ int main(){
      */
     test("Init estimator");
     estimator est(Multilevel_RR, sp, mlp);
+
+    vvd results = model.simulations(5);
+    for (auto i: results){
+        for (auto j: i){
+            cout << j << " ";
+        }
+        cout << endl;
+    }
 
     return 0;
 }

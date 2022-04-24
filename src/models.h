@@ -38,5 +38,5 @@ class nested_monte_carlo{
 
         void set_n(int n1_, int n2_);
         void get_normal_distribution(int N);
-        void simulations(int N);
+        vvd simulations(int N);
 };

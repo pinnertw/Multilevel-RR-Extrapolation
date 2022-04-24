@@ -1,2 +1,2 @@
-make call
-./call.out
+make $1
+./$1.out

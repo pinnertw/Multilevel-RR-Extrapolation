@@ -37,6 +37,8 @@ vvd euler_scheme::simulations(int N){
 // NESTED_MONTE_CARLO
 nested_monte_carlo::nested_monte_carlo(double X0_, double r_, double sigma_, double K1_, double K2_, double T1_, double T2_)
 : X0(X0_), r(r_), sigma(sigma_), K1(K1_), K2(K2_), T1(T1_), T2(T2_){
+    n1 = 1;
+    n2 = 3;
 }
 
 void nested_monte_carlo::set_n(int n1_, int n2_){
@@ -53,14 +55,17 @@ void nested_monte_carlo::get_normal_distribution(int N){
         random_normal[i] = dist(generator);
     }
 }
-void nested_monte_carlo::simulations(int N){
+vvd nested_monte_carlo::simulations(int N){
     get_normal_distribution(N);
     vvd results = vvd(N, vd((n2+1), 0.));
+    double shift1 = exp((r-0.5*sigma*sigma) * T1);
+    double shift2 = exp((r-0.5*sigma*sigma) * (T2 - T1));
     for (auto i=0; i<N; i++){
         // results[i][0] = S_T1, results[i][1 ~ n2] = S_T2
-        results[i][0] = X0 * exp((r - 0.5 * sigma * sigma) * T1 + sigma * sqrt(T1) * random_normal[i*(n2+1)]);
+        results[i][0] = X0 * shift1 * exp(sigma*sqrt(T1) * random_normal[i*(n2+1)]);
         for (auto j=1; j<n2 + 1; j++){
-            results[i][j] = results[i][0] * exp((r - 0.5 * sigma * sigma) * (T2 - T1) + sigma * sqrt(T2 - T1) * random_normal[i * (n2 + 1) + j]);
+            results[i][j] = results[i][0] * shift2 * exp(sigma * sqrt(T2 - T1) * random_normal[i * (n2 + 1) + j]);
         }
     }
+    return results;
 }
