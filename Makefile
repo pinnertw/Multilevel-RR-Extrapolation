@@ -27,16 +27,16 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(cc) $(CFLAGS) -c $< -o $@
 
 call: $(OBJ) $(SIM_DIR)/BS_call.cpp
-	$(cc) $(CFLAGS) $(OBJ) $(SIM_DIR)/BS_call.cpp -o executable/call.out
+	$(cc) $(CFLAGS) $(OBJ) $(SIM_DIR)/BS_call.cpp -o $(EXE_DIR)/call.out
 
 lookback: $(OBJ) $(SIM_DIR)/BS_lookback.cpp 
-	$(cc) $(CFLAGS) $(OBJ) $(SIM_DIR)/BS_lookback.cpp -o executable/lookback.out
+	$(cc) $(CFLAGS) $(OBJ) $(SIM_DIR)/BS_lookback.cpp -o $(EXE_DIR)/lookback.out
 
 barrier: $(OBJ) $(SIM_DIR)/BS_barrier.cpp
-	$(cc) $(CFLAGS) $(OBJ) $(SIM_DIR)/BS_barrier.cpp -o executable/barrier.out
+	$(cc) $(CFLAGS) $(OBJ) $(SIM_DIR)/BS_barrier.cpp -o $(EXE_DIR)/barrier.out
 
-compound: $(OBJ) compound.cpp
-	$(cc) $(CFLAGS) $(OBJ) compound.cpp -o executable/compound.out
+compound: $(OBJ) $(SIM_DIR)/compound.cpp
+	$(cc) $(CFLAGS) $(OBJ) $(SIM_DIR)/compound.cpp -o $(EXE_DIR)/compound.out
 
 clean:
 	rm -f $(OBJ) *.out *.txt executable/*
