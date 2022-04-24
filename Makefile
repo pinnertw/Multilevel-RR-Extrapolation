@@ -1,5 +1,6 @@
 SRC_DIR=src
 OBJ_DIR=obj
+SIM_DIR=simulations
 
 cc=g++
 CFLAGS=-O3 -I$(SRC_DIR)
@@ -21,17 +22,14 @@ $(OBJ_DIR):
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(cc) $(CFLAGS) -c $< -o $@
 
-test: $(OBJ) main.cpp
-	$(cc) $(CFLAGS) $(OBJ) main.cpp -o test.out
+call: $(OBJ) $(SIM_DIR)/BS_call.cpp
+	$(cc) $(CFLAGS) $(OBJ) $(SIM_DIR)/BS_call.cpp -o call.out
 
-call: $(OBJ) BS_call.cpp
-	$(cc) $(CFLAGS) $(OBJ) BS_call.cpp -o call.out
+lookback: $(OBJ) $(SIM_DIR)/BS_lookback.cpp
+	$(cc) $(CFLAGS) $(OBJ) $(SIM_DIR)/BS_lookback.cpp -o lookback.out
 
-lookback: $(OBJ) BS_lookback.cpp
-	$(cc) $(CFLAGS) $(OBJ) BS_lookback.cpp -o lookback.out
-
-barrier: $(OBJ) BS_barrier.cpp
-	$(cc) $(CFLAGS) $(OBJ) BS_barrier.cpp -o barrier.out
+barrier: $(OBJ) $(SIM_DIR)/BS_barrier.cpp
+	$(cc) $(CFLAGS) $(OBJ) $(SIM_DIR)/BS_barrier.cpp -o barrier.out
 
 compound: $(OBJ) compound.cpp
 	$(cc) $(CFLAGS) $(OBJ) compound.cpp -o compound.out

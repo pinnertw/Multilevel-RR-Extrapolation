@@ -1,9 +1,9 @@
 #include <bits/stdc++.h>
 #include <sys/time.h>
-#include "src/define.h"
-#include "src/structural_params.h"
-#include "src/models.h"
-#include "src/estimator.h"
+#include "../src/define.h"
+#include "../src/structural_params.h"
+#include "../src/models.h"
+#include "../src/estimator.h"
 
 void test(string str="000"){
     cout << str << endl;
@@ -83,7 +83,7 @@ int main(){
     estimator est(Multilevel_RR, sp, mlp);
 
     // Autotune
-    for (int k=1; k<3; k++){
+    for (int k=1; k<9; k++){
         struct timeval t1, t2;
         double duration1, duration2;
         gettimeofday(&t1, NULL);

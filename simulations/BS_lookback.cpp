@@ -1,9 +1,9 @@
 #include <bits/stdc++.h>
 #include <sys/time.h>
-#include "src/define.h"
-#include "src/structural_params.h"
-#include "src/models.h"
-#include "src/estimator.h"
+#include "../src/define.h"
+#include "../src/structural_params.h"
+#include "../src/models.h"
+#include "../src/estimator.h"
 
 void test(string str="000"){
     cout << str << endl;
@@ -63,23 +63,20 @@ int main(){
      * alpha, beta, V1, varY0, simulation_type
      * simulation_type = diffusion / nested
      */
-    test("Init multilevel parameters");
     multilevel_params mlp(alpha, beta, V1, varY0, diffusion);
 
     /* euler_scheme
      * step_size, X0, b, sigma, T
      */
-    test("Init euler scheme");
     euler_scheme model(10, s0, r, sigma, T);
 
     /* estimator
      * method_type, structural_params, multilevel_params;
      * method_type = Multilevel_RR, Multilevel_MC
      */
-    test("Init estimator");
     estimator est(Multilevel_RR, sp, mlp);
 
-    for (int k=1; k<3; k++){
+    for (int k=1; k<10; k++){
         struct timeval t1, t2;
         double duration1, duration2;
         gettimeofday(&t1, NULL);
