@@ -4,17 +4,10 @@
 #include "estimator.h"
 using namespace std;
 
-estimator::estimator(method_type method_, structural_params sp_, multilevel_params mlp_)
+estimator::estimator(method_type method_, structural_params &sp_, multilevel_params &mlp_)
     : method(method_), sp(sp_), mlp(mlp_)
 {
     M = 2;
-}
-
-void estimator::init(double epsilon){
-    sp.R = R_star(epsilon);
-    init_T();
-    sp.h = h_star(epsilon);
-    init_q_and_N(epsilon);
 }
 
 void estimator::auto_tune(double epsilon){
@@ -31,6 +24,16 @@ void estimator::auto_tune(double epsilon){
             M_opt = M_;
         }
     }
+    M = M_opt;
+}
+
+void estimator::init(double epsilon){
+    sp.R = R_star(epsilon);
+    sp.init_n(M);
+    mlp.init_weights(sp.R, sp.n);
+    init_T();
+    sp.h = h_star(epsilon);
+    init_q_and_N(epsilon);
 }
 
 // Theorem 3.6
@@ -74,7 +77,7 @@ double estimator::unitary_variance(int i){
 double estimator::kappa(){
     double sum = sp.q[0];
     for (auto i=1; i < sp.R; i++){
-        sum += sp.q[i] * (sp.n[i-1] * sp.n[i]);
+        sum += sp.q[i] * unitary_cost(i);
     }
     return sum;
 }
@@ -88,14 +91,16 @@ double estimator::h_star(double epsilon){
     if (method == Multilevel_RR){
         double n_fact = 0.;
         double alphaR = mlp.alpha * sp.R;
-        return 1 / ceil(pow(1 + 2 * alphaR, 1 / 2. / alphaR) *
+        h_inverse = ceil(pow(1 + 2 * alphaR, 1 / 2. / alphaR) *
             pow(epsilon , -1/alphaR) *
             pow(M, -(sp.R - 1)/2));
+        return 1 / (double)h_inverse;
     }
     else if (method == Multilevel_MC){
-        return 1 / ceil(pow(1 + 2 * mlp.alpha, 1 / 2. / mlp.alpha) * 
+        h_inverse = ceil(pow(1 + 2 * mlp.alpha, 1 / 2. / mlp.alpha) * 
             pow(epsilon / fabs(mlp.c1), -1/mlp.alpha) * 
             pow(M, -sp.R + 1));
+        return 1/ (double) h_inverse;
     }
     else return 1.;
 }
@@ -132,4 +137,34 @@ void estimator::init_T(){
         }
         sp.T[0][0] = 1;
     }
+}
+
+double RMSE(vd results, double real_value){
+    double sum=0.;
+    for (auto i: results){
+        sum += pow(i - real_value, 2.);
+    }
+    sum /= (double)results.size();
+    return sqrt(sum);
+}
+
+double bias(vd results, double real_value){
+    double sum=0.;
+    for (auto i: results){
+        sum += i - real_value;
+    }
+    sum /= (double) results.size();
+    return sum;
+}
+
+double var(vd results){
+    double sum=0.;
+    double sum_square=0.;
+    for (auto i: results){
+        sum += i;
+        sum_square += i * i;
+    }
+    sum /= (double)results.size();
+    sum_square /= (double)results.size();
+    return sum_square - sum * sum;
 }

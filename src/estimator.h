@@ -7,13 +7,14 @@
 using namespace std;
 
 class estimator{
-    private:
+    public:
         method_type method;
         structural_params sp;
         multilevel_params mlp;
         int M;
+        int h_inverse;
     public:
-        estimator(method_type method_, structural_params sp_, multilevel_params mlp_);
+        estimator(method_type method_, structural_params& sp_, multilevel_params& mlp_);
         void init(double epsilon);
         void auto_tune(double epsilon);
 
@@ -29,3 +30,7 @@ class estimator{
         int R_star(double epsilon);
         void init_T();
 };
+
+double RMSE(vd, double);
+double bias(vd, double);
+double var(vd);

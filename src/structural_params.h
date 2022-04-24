@@ -25,7 +25,7 @@ class multilevel_params{
         double alpha; // weak error rate, exponant in polynome.
         double beta; // Strong approximation error, L2 error <= V1 h^beta
 
-        // Given or to calculate: V1, var(Y0), theta), TODO
+        // Given V1, var(Y0), theta)
         double V1;
         double varY0;
         double theta;

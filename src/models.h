@@ -3,7 +3,7 @@
 using namespace std;
 
 class euler_scheme{
-    private:
+    public:
         double step_size;
         double sqrt_step_size;
         double T;
@@ -14,10 +14,10 @@ class euler_scheme{
 
         vd random_normal;
     public:
-        euler_scheme(double step_size_, double X0_, double b_, double sigma_, double T_);
-        void reset_step(double step_size_);
+        euler_scheme(int total_step_, double X0_, double b_, double sigma_, double T_);
+        void reset_step(int total_step_);
         void get_normal_distribution(int N);
-        vvd simulations(int N);
+        vvvd simulations(int N, int M);
 };
 
 class nested_monte_carlo{

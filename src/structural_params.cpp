@@ -31,9 +31,9 @@ double multilevel_params::dp_exponant(int i, int n_i){
 }
 
 void multilevel_params::init_weights(int R, vi& n){
-    vd weights = vd(R, 0.);
-    vb dp_exist = vb(R, false);
-    vd dp_exponant_array = vd(R, 0.);
+    weights = vd(R, 0.);
+    dp_exist = vb(R, false);
+    dp_exponant_array = vd(R, 0.);
     double w_total = 0.;
     for (auto i=1; i<R; i++){
         if ((R - (i + 1)) % 2 != 0){

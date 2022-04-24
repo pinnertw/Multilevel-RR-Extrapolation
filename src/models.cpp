@@ -3,32 +3,44 @@
 using namespace std;
 
 // EULER_SCHEME
-euler_scheme::euler_scheme(double step_size_, double X0_, double b_, double sigma_, double T_):
-    step_size(step_size_), X0(X0_), b(b_), sigma(sigma_), T(T_){
+euler_scheme::euler_scheme(int total_step_, double X0_, double b_, double sigma_, double T_):
+    total_step(total_step_), X0(X0_), b(b_), sigma(sigma_), T(T_){
+        step_size = (T / (double) total_step);
         sqrt_step_size = sqrt(step_size);
-        total_step = (int)(T / step_size);
 }
-void euler_scheme::reset_step(double step_size_){
-    step_size = step_size_;
+void euler_scheme::reset_step(int total_step_){
+    total_step = total_step_;
+    step_size = (T / (double) total_step);
     sqrt_step_size = sqrt(step_size);
-    total_step = (int)(T / step_size);
 }
 void euler_scheme::get_normal_distribution(int N){
-    mt19937_64 generator;
     auto seed = chrono::system_clock::now().time_since_epoch().count();
+    mt19937_64 generator(seed);
     random_normal = vd(N * total_step, 0.);
     normal_distribution<double> dist(0., 1.);
     for (auto i=0; i<N*total_step; i++){
         random_normal[i] = dist(generator);
     }
 }
-vvd euler_scheme::simulations(int N){
+vvvd euler_scheme::simulations(int N, int M){
+    // Return results[N][0/1][total_step]
     get_normal_distribution(N);
-    vvd results = vvd(N, vd(total_step + 1, 0.));
+    vvvd results = vvvd(N, vvd(2, vd(total_step + 1, 0.)));
+    double sum_random = 0.;
     for (auto i=0; i <N; i++){
-        results[i][0] = X0;
+        results[i][0][0] = X0;
+        results[i][1][0] = X0;
         for (auto j=1; j<=total_step; j++){
-            results[i][j] = results[i][j-1] + step_size * b * results[i][j-1] + sqrt_step_size * sigma * results[i][j-1] * random_normal[i * total_step + j];
+            // Simulation with little steps
+            results[i][0][j] = results[i][0][j-1] + step_size * b * results[i][0][j-1] + 
+                sqrt_step_size * sigma * results[i][0][j-1] * random_normal[i * total_step + j-1];
+            sum_random += random_normal[i * total_step + j - 1];
+            // Simulation with greater steps
+            if (j % M == 0){
+                results[i][1][j] = results[i][1][j-M] + M * step_size * b * results[i][1][j-M] +
+                    sqrt_step_size * sigma * results[i][1][j-M] * sum_random;
+                sum_random = 0.;
+            }
         }
     }
     return results;
