@@ -6,17 +6,11 @@ RES_DIR=results
 
 cc=g++
 CFLAGS=-O3 -I$(SRC_DIR)
-OPENMPFLAGS=-fopenmp
+MLMC=-DMLMC
 
-SRC= structural_params.cpp \
-	 models.cpp \
-	 estimator.cpp
+OBJ=$(OBJ_DIR)/structural_params.o $(OBJ_DIR)/models.o $(OBJ_DIR)/estimator.o
 
-OBJ=$(OBJ_DIR)/structural_params.o \
-	$(OBJ_DIR)/models.o \
-	$(OBJ_DIR)/estimator.o
-
-all: $(OBJ_DIR) $(EXE_DIR) $(RES_DIR) call lookback barrier compound
+all: $(OBJ_DIR) $(EXE_DIR) $(RES_DIR) call_MLRR lookback_MLRR barrier_MLRR compound_MLRR call_MLMC lookback_MLMC barrier_MLMC compound_MLMC
 
 $(OBJ_DIR):
 	mkdir $(OBJ_DIR)
@@ -30,17 +24,29 @@ $(RES_DIR):
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(cc) $(CFLAGS) -c $< -o $@
 
-call: $(OBJ) $(SIM_DIR)/BS_call.cpp
-	$(cc) $(CFLAGS) $(OBJ) $(SIM_DIR)/BS_call.cpp -o $(EXE_DIR)/call.out
+call_MLRR: $(OBJ) $(SIM_DIR)/BS_call.cpp
+	$(cc) $(CFLAGS) $^ -o $(EXE_DIR)/$@.out
 
-lookback: $(OBJ) $(SIM_DIR)/BS_lookback.cpp 
-	$(cc) $(CFLAGS) $(OBJ) $(SIM_DIR)/BS_lookback.cpp -o $(EXE_DIR)/lookback.out
+lookback_MLRR: $(OBJ) $(SIM_DIR)/BS_lookback.cpp 
+	$(cc) $(CFLAGS) $^ -o $(EXE_DIR)/$@.out
 
-barrier: $(OBJ) $(SIM_DIR)/BS_barrier.cpp
-	$(cc) $(CFLAGS) $(OBJ) $(SIM_DIR)/BS_barrier.cpp -o $(EXE_DIR)/barrier.out
+barrier_MLRR: $(OBJ) $(SIM_DIR)/BS_barrier.cpp
+	$(cc) $(CFLAGS) $^ -o $(EXE_DIR)/$@.out
 
-compound: $(OBJ) $(SIM_DIR)/compound.cpp
-	$(cc) $(CFLAGS) $(OBJ) $(SIM_DIR)/compound.cpp -o $(EXE_DIR)/compound.out
+compound_MLRR: $(OBJ) $(SIM_DIR)/compound.cpp
+	$(cc) $(CFLAGS) $^ -o $(EXE_DIR)/$@.out
+
+call_MLMC: $(OBJ) $(SIM_DIR)/BS_call.cpp
+	$(cc) $(CFLAGS) $(MLMC) $^ -o $(EXE_DIR)/$@.out
+
+lookback_MLMC: $(OBJ) $(SIM_DIR)/BS_lookback.cpp 
+	$(cc) $(CFLAGS) $(MLMC) $^ -o $(EXE_DIR)/$@.out
+
+barrier_MLMC: $(OBJ) $(SIM_DIR)/BS_barrier.cpp
+	$(cc) $(CFLAGS) $(MLMC) $^ -o $(EXE_DIR)/$@.out
+
+compound_MLMC: $(OBJ) $(SIM_DIR)/compound.cpp
+	$(cc) $(CFLAGS) $(MLMC) $^ -o $(EXE_DIR)/$@.out
 
 clean:
 	rm -f $(OBJ) *.out *.txt executable/*

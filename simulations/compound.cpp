@@ -86,7 +86,14 @@ int main(){
      * method_type, structural_params, multilevel_params;
      * method_type = Multilevel_RR, Multilevel_MC
      */
+#if MLMC
+    estimator est(Multilevel_MC, sp, mlp);
+    test("MLMC");
+#else
     estimator est(Multilevel_RR, sp, mlp);
+    test("MLRR");
+#endif
+
     cout << "k,t1,t2,epsilon_L,bias,variance,R,M,h_inverse,N,cost" << endl;
     for (int k=1; k<10; k++){
         struct timeval t1, t2;
