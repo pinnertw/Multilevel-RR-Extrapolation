@@ -80,10 +80,8 @@ int main(){
      */
 #if MLMC
     estimator est(Multilevel_MC, sp, mlp);
-    test("MLMC");
 #else
     estimator est(Multilevel_RR, sp, mlp);
-    test("MLRR");
 #endif
 
 

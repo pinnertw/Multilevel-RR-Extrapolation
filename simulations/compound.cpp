@@ -88,10 +88,8 @@ int main(){
      */
 #if MLMC
     estimator est(Multilevel_MC, sp, mlp);
-    test("MLMC");
 #else
     estimator est(Multilevel_RR, sp, mlp);
-    test("MLRR");
 #endif
 
     cout << "k,t1,t2,epsilon_L,bias,variance,R,M,h_inverse,N,cost" << endl;
