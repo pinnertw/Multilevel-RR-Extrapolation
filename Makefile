@@ -11,7 +11,7 @@ MSRR=-DMultistep_RR
 
 OBJ=$(OBJ_DIR)/structural_params.o $(OBJ_DIR)/models.o $(OBJ_DIR)/estimator.o
 
-all: $(OBJ_DIR) $(EXE_DIR) $(RES_DIR) call_MLRR lookback_MLRR barrier_MLRR compound_MLRR call_MLMC lookback_MLMC barrier_MLMC compound_MLMC
+all: $(OBJ_DIR) $(EXE_DIR) $(RES_DIR) call_MLRR lookback_MLRR barrier_MLRR compound_MLRR call_MLMC lookback_MLMC barrier_MLMC compound_MLMC call_MSRR lookback_MSRR barrier_MSRR
 
 $(OBJ_DIR):
 	mkdir $(OBJ_DIR)
@@ -58,8 +58,6 @@ lookback_MSRR: $(OBJ) $(SIM_DIR)/BS_lookback.cpp
 barrier_MSRR: $(OBJ) $(SIM_DIR)/BS_barrier.cpp
 	$(cc) $(CFLAGS) $(MSRR) $^ -o $(EXE_DIR)/$@.out
 
-compound_MSRR: $(OBJ) $(SIM_DIR)/compound.cpp
-	$(cc) $(CFLAGS) $(MSRR) $^ -o $(EXE_DIR)/$@.out
 clean:
 	rm -f $(OBJ) *.out *.txt executable/*
 	rmdir $(OBJ_DIR)

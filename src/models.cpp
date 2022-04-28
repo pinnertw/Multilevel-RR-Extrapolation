@@ -148,7 +148,7 @@ vvvd euler_scheme_MSRR::simulations(int N){
             results[i][1][1] = results[i][1][0] * (1 + 1.5 * step_size * b + sqrt(1.5) * sqrt_step_size * sigma * u2_1);
             results[i][1][2] = results[i][1][1] * (1 + 1.5 * step_size * b + sqrt(1.5) * sqrt_step_size * sigma * u2_2);
             // U^1
-            results[i][0][1] = results[i][0][0] * (1 + 3 * step_size * b + sqrt(3)* sqrt_step_size * sigma * (u2_1 + u2_2));
+            results[i][0][1] = results[i][0][0] * (1 + 3 * step_size * b + sqrt(3)* sqrt_step_size * sigma * (u2_1 + u2_2) / sqrt(2));
         }
         else if (total_step == 4){
             results[i][0][0] = X0;
@@ -168,16 +168,16 @@ vvvd euler_scheme_MSRR::simulations(int N){
             double u3_1 = (random_normal[i][0] * sqrt(3) + random_normal[i][1])/2.;
             double u3_2 = (random_normal[i][2] + random_normal[i][3]) / sqrt(2);
             double u3_3 = (random_normal[i][4] + sqrt(3) * random_normal[i][5])/2.;
-            results[i][2][1] = results[i][2][0] * (1 + 4/3. * step_size * b + sqrt(4/3.) * sqrt_step_size * sigma * (random_normal[i][0] * sqrt(3) + random_normal[i][1])/2.);
-            results[i][2][2] = results[i][2][1] * (1 + 4/3. * step_size * b + sqrt(4/3.) * sqrt_step_size * sigma * (random_normal[i][1] + random_normal[i][2]) / sqrt(2));
-            results[i][2][3] = results[i][2][2] * (1 + 4/3. * step_size * b + sqrt(4/3.) * sqrt_step_size * sigma * random_normal[i][3]);
+            results[i][2][1] = results[i][2][0] * (1 + 4/3. * step_size * b + sqrt(4/3.) * sqrt_step_size * sigma * u3_1);
+            results[i][2][2] = results[i][2][1] * (1 + 4/3. * step_size * b + sqrt(4/3.) * sqrt_step_size * sigma * u3_2);
+            results[i][2][3] = results[i][2][2] * (1 + 4/3. * step_size * b + sqrt(4/3.) * sqrt_step_size * sigma * u3_3);
             // U^2
-            double u2_1 = (sqrt(2) * random_normal[i][0] + random_normal[i][1]) / sqrt(3.);
-            double u2_2 = (random_normal[i][2] + sqrt(2) * random_normal[i][3]) / sqrt(3.);
+            double u2_1 = (sqrt(2) * u4_1 + u4_2) / sqrt(3.);
+            double u2_2 = (u4_3 + sqrt(2) * u4_4) / sqrt(3.);
             results[i][1][1] = results[i][1][0] * (1 + 2. * step_size * b + sqrt(2) * sqrt_step_size * sigma * u2_1);
             results[i][1][2] = results[i][1][1] * (1 + 2. * step_size * b + sqrt(2) * sqrt_step_size * sigma * u2_2);
             // U^1
-            results[i][0][1] = results[i][0][0] * (1 + 4. * step_size * b + 2 * sqrt_step_size * sigma * (u2_1 + u2_2));
+            results[i][0][1] = results[i][0][0] * (1 + 4. * step_size * b + 2 * sqrt_step_size * sigma * (u2_1 + u2_2)/sqrt(2));
         }
     }
     return results;
