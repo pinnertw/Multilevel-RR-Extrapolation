@@ -7,6 +7,7 @@ RES_DIR=results
 cc=g++
 CFLAGS=-O3 -I$(SRC_DIR)
 MLMC=-DMLMC
+MSRR=-DMultistep_RR
 
 OBJ=$(OBJ_DIR)/structural_params.o $(OBJ_DIR)/models.o $(OBJ_DIR)/estimator.o
 
@@ -48,6 +49,17 @@ barrier_MLMC: $(OBJ) $(SIM_DIR)/BS_barrier.cpp
 compound_MLMC: $(OBJ) $(SIM_DIR)/compound.cpp
 	$(cc) $(CFLAGS) $(MLMC) $^ -o $(EXE_DIR)/$@.out
 
+call_MSRR: $(OBJ) $(SIM_DIR)/BS_call.cpp
+	$(cc) $(CFLAGS) $(MSRR) $^ -o $(EXE_DIR)/$@.out
+
+lookback_MSRR: $(OBJ) $(SIM_DIR)/BS_lookback.cpp 
+	$(cc) $(CFLAGS) $(MSRR) $^ -o $(EXE_DIR)/$@.out
+
+barrier_MSRR: $(OBJ) $(SIM_DIR)/BS_barrier.cpp
+	$(cc) $(CFLAGS) $(MSRR) $^ -o $(EXE_DIR)/$@.out
+
+compound_MSRR: $(OBJ) $(SIM_DIR)/compound.cpp
+	$(cc) $(CFLAGS) $(MSRR) $^ -o $(EXE_DIR)/$@.out
 clean:
 	rm -f $(OBJ) *.out *.txt executable/*
 	rmdir $(OBJ_DIR)

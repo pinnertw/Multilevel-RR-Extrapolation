@@ -45,6 +45,31 @@ class instance{
     }
 };
 
+class instance_MSRR{
+    public:
+        double s0;
+        double r;
+        double sigma;
+        double T;
+        double K;
+        double B;
+    instance_MSRR(double s0_, double r_, double sigma_, double T_, double K_, double B_):
+        s0(s0_), r(r_), sigma(sigma_), T(T_), K(K_), B(B_){
+        }
+    double payoff_array(vd & results, int M=1){
+        // set M to root_M to get Y_{j-1}
+        bool passed = false;
+        for (auto i=0; i < M; i += 1){
+            if (results[i] > B) {
+                passed = true;
+                break;
+            }
+        }
+        if (!passed) return exp(-r * T) * max(results[M-1] - K,  0.);
+        else return 0.;
+    }
+};
+
 int main(){
     /* We test on a up-and-out call option where s0=100, r=0.0, sigma=0.15, T=1 and K=100, B=120.
      * For params, we have
@@ -57,7 +82,11 @@ int main(){
     double alpha=0.5, beta=0.5, V1=5.3, varY0=303.;
     double real_value = 1.855225;
 
+#if Multistep_RR
+    instance_MSRR eval(s0, r, sigma, T, K, B);
+#else
     instance eval(s0, r, sigma, T, K, B);
+#endif
 
     /*structural_params
      */
@@ -87,12 +116,26 @@ int main(){
 #if Multistep_RR
     struct timeval t1, t2;
     double duration1;
-    gettimeofday(&t1, NULL);
+    cout << "R,t,epsilon_L,bias,var" << endl;
+    int nb_simulation=10000;
     for (int R=2; R < 5; R++){
+        gettimeofday(&t1, NULL);
         euler_scheme_MSRR model(R, s0, r, sigma, T);
+        vvvd results = model.simulations(nb_simulation);
+        vd payoff_results(nb_simulation, 0.);
+        for (int i=0; i < nb_simulation; i++){
+            for (int r_=1; r_ <= R; r_++){
+                //cout << eval.payoff_array(results[i][r_-1], r_) << ' ' << real_value << endl;
+                payoff_results[i] += model.alpha_rs[r_-1] * eval.payoff_array(results[i][r_-1], r_);
+            }
+        }
+        gettimeofday(&t2, NULL);
+        duration1 = (t2.tv_sec - t1.tv_sec) + ((t2.tv_usec - t1.tv_usec)/1e6);
+        double epsilon_L = RMSE(payoff_results, real_value);
+        double bias_ = bias(payoff_results, real_value);
+        double var_ = var(payoff_results);
+        cout << R << "," << duration1 << "," << epsilon_L << "," << bias_ << "," << var_ << endl;
     }
-    gettimeofday(&t2, NULL);
-    duration1 = (t2.tv_sec - t1.tv_sec) + ((t2.tv_usec - t1.tv_usec)/1e6);
 
 #else
     cout << "k,t1,t2,epsilon_L,bias,variance,R,M,h_inverse,N,cost" << endl;

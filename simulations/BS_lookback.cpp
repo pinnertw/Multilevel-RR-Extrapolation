@@ -40,6 +40,26 @@ class instance{
     }
 };
 
+class instance_MSRR{
+    public:
+        double s0;
+        double r;
+        double sigma;
+        double T;
+        double lambda;
+    instance_MSRR(double s0_, double r_, double sigma_, double T_, double lambda_):
+        s0(s0_), r(r_), sigma(sigma_), T(T_), lambda(lambda_){
+        }
+    double payoff_array(vd & results, int M){
+        double x_min = DBL_MAX;
+        for (auto i=0; i< M; i+=1){
+            if (results[i] < x_min) x_min = results[i];
+        }
+        return exp(-r * T) * max(results[M-1] - lambda * x_min, 0.);
+    }
+};
+
+
 int main(){
     /* We test on a Lookback option where s0=100, r=0.15, sigma=0.1, T=1 and lambda=1.1.
      * For params, we have
@@ -53,7 +73,11 @@ int main(){
     double alpha=0.5, beta=1., V1=3.58, varY0=41.;
     double real_value = 8.89343;
 
+#if Multistep_RR
+    instance_MSRR eval(s0, r, sigma, T, lambda);
+#else
     instance eval(s0, r, sigma, T, lambda);
+#endif
 
     /*structural_params
      */
@@ -79,6 +103,31 @@ int main(){
 #else
     estimator est(Multilevel_RR, sp, mlp);
 #endif
+#if Multistep_RR
+    struct timeval t1, t2;
+    double duration1;
+    cout << "R,t,epsilon_L,bias,var" << endl;
+    int nb_simulation=10000;
+    for (int R=2; R < 5; R++){
+        gettimeofday(&t1, NULL);
+        euler_scheme_MSRR model(R, s0, r, sigma, T);
+        vvvd results = model.simulations(nb_simulation);
+        vd payoff_results(nb_simulation, 0.);
+        for (int i=0; i < nb_simulation; i++){
+            for (int r_=1; r_ <= R; r_++){
+                //cout << eval.payoff_array(results[i][r_-1], r_) << ' ' << real_value << endl;
+                payoff_results[i] += model.alpha_rs[r_-1] * eval.payoff_array(results[i][r_-1], r_);
+            }
+        }
+        gettimeofday(&t2, NULL);
+        duration1 = (t2.tv_sec - t1.tv_sec) + ((t2.tv_usec - t1.tv_usec)/1e6);
+        double epsilon_L = RMSE(payoff_results, real_value);
+        double bias_ = bias(payoff_results, real_value);
+        double var_ = var(payoff_results);
+        cout << R << "," << duration1 << "," << epsilon_L << "," << bias_ << "," << var_ << endl;
+    }
+
+#else
 
     cout << "k,t1,t2,epsilon_L,bias,variance,R,M,h_inverse,N,cost" << endl;
     for (int k=1; k<9; k++){
@@ -124,6 +173,7 @@ int main(){
         cout << k << "," << duration1 << "," << duration2 << "," << epsilon_L << "," << bias_ << "," << var_ << "," <<
             est.sp.R << "," << est.M << "," << est.h_inverse << "," << est.sp.N << "," << est.cost() << endl;
     }
+#endif
 
     return 0;
 }

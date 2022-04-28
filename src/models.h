@@ -51,11 +51,11 @@ class euler_scheme_MSRR{
         int total_step;
 
         vvd random_normal;
-        vd alpha_rs;
     public:
+        vd alpha_rs;
         euler_scheme_MSRR(int, double, double, double, double);
         void reset_step(int);
         void set_alpha_r(int);
         void get_normal_distribution(int);
         vvvd simulations(int N);
-}
+};
