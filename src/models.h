@@ -40,3 +40,22 @@ class nested_monte_carlo{
         void get_normal_distribution(int N);
         vvd simulations(int N);
 };
+class euler_scheme_MSRR{
+    private:
+        double step_size;
+        double sqrt_step_size;
+        double T;
+        double X0;
+        double b;
+        double sigma;
+        int total_step;
+
+        vvd random_normal;
+        vd alpha_rs;
+    public:
+        euler_scheme_MSRR(int, double, double, double, double);
+        void reset_step(int);
+        void set_alpha_r(int);
+        void get_normal_distribution(int);
+        vvvd simulations(int N);
+}

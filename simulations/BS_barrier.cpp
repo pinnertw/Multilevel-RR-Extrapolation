@@ -84,7 +84,17 @@ int main(){
     estimator est(Multilevel_RR, sp, mlp);
 #endif
 
+#if Multistep_RR
+    struct timeval t1, t2;
+    double duration1;
+    gettimeofday(&t1, NULL);
+    for (int R=2; R < 5; R++){
+        euler_scheme_MSRR model(R, s0, r, sigma, T);
+    }
+    gettimeofday(&t2, NULL);
+    duration1 = (t2.tv_sec - t1.tv_sec) + ((t2.tv_usec - t1.tv_usec)/1e6);
 
+#else
     cout << "k,t1,t2,epsilon_L,bias,variance,R,M,h_inverse,N,cost" << endl;
     for (int k=1; k<8; k++){
         struct timeval t1, t2;
@@ -129,6 +139,7 @@ int main(){
         cout << k << "," << duration1 << "," << duration2 << "," << epsilon_L << "," << bias_ << "," << var_ << "," <<
             est.sp.R << "," << est.M << "," << est.h_inverse << "," << est.sp.N << "," << est.cost() << endl;
     }
+#endif
 
     return 0;
 }
